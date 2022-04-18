@@ -1,8 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const app = express();
+var app = express();
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const max = 2000000000;
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -21,7 +22,7 @@ const Url = mongoose.model("Url", urlSchema);
 // Basic Configuration
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors(), bodyParser.urlencoded({extended: false}));
 
 app.use("/public", express.static(`${process.cwd()}/public`));
 
@@ -29,10 +30,10 @@ app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
 });
 
-app.post("/api/shorturl", function (req, res, done) {
+app.post("/api/shorturl", function querypara2(req, res, done) {
   var randNumber = Math.floor(Math.random() * max);
   const url = new Url({
-    url: req.body.url,
+    url: req.body.url.toString(),
     short_url: randNumber,
   });
   url.save(function (err, data) {
@@ -45,8 +46,9 @@ app.post("/api/shorturl", function (req, res, done) {
 app.get("/api/shorturl/:short_url", function (req, res, done) {
   Url.findOne({ short_url: req.params.short_url }, function (err, data) {
     if (err) return console.error(err);
+    res.redirect(Url.url);
   });
-  res.redirect(Url.url);
+  
 });
 
 // Your first API endpoint
