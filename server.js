@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const dns = require('dns');
+const dns = require("dns");
 var app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -31,26 +31,29 @@ app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
 });
 
-app.post("/api/shorturl", function querypara2(req, res, done) {
-  // new URL(req.body.url);
-  dns.lookup(req.body.url, (err) => res.json({ error: 'invalid url' }));
-  var randNumber = Math.floor(Math.random() * max);
-  const url = new Url({
-    url: req.body.url.toString(),
-    short_url: randNumber,
-  });
-  url.save(function (err, data) {
-    if (err) return console.error(err);
-    return done(null, data);
-  });
-  res.json({ original_url: req.body.url, short_url: randNumber });
-});
+app.post("/api/shorturl", function (req, res, done) {
+  dns.lookup(req.body.url, function (err, address) {
+    if (! typeof address === 'string')
+    res.json({ error: "invalid url"});
+  }
+  );
+//   var randNumber = Math.floor(Math.random() * max);
+//   const url = new Url({
+//     url: req.body.url.toString(),
+//     short_url: randNumber,
+//   });
+//   url.save(function (err, data) {
+//     if (err) return console.error(err);
+//     return done(null, data);
+//   });
+//   res.json({ original_url: req.body.url, short_url: randNumber });
+// });
 
-app.get("/api/shorturl/:short_url", function (req, res, done) {
-  Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
-    if (err) return console.error(err);
-    res.redirect(String(doc.url));
-  });
+// app.get("/api/shorturl/:short_url", function (req, res, done) {
+//   Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
+//     if (err) return console.error(err);
+//     res.redirect(String(doc.url));
+//   });
 });
 
 // Your first API endpoint
