@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const dns = require('dns');
 var app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -22,7 +23,7 @@ const Url = mongoose.model("Url", urlSchema);
 // Basic Configuration
 const port = process.env.PORT || 3000;
 
-app.use(cors(), bodyParser.urlencoded({extended: false}));
+app.use(cors(), bodyParser.urlencoded({ extended: false }));
 
 app.use("/public", express.static(`${process.cwd()}/public`));
 
@@ -31,6 +32,8 @@ app.get("/", function (req, res) {
 });
 
 app.post("/api/shorturl", function querypara2(req, res, done) {
+  // new URL(req.body.url);
+  dns.lookup(req.body.url, (err) => res.json({ error: 'invalid url' }));
   var randNumber = Math.floor(Math.random() * max);
   const url = new Url({
     url: req.body.url.toString(),
@@ -46,10 +49,8 @@ app.post("/api/shorturl", function querypara2(req, res, done) {
 app.get("/api/shorturl/:short_url", function (req, res, done) {
   Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
     if (err) return console.error(err);
-    // res.json({12: "hello",hello: doc.url});
     res.redirect(String(doc.url));
   });
-  
 });
 
 // Your first API endpoint
