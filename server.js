@@ -32,8 +32,10 @@ app.get("/", function (req, res) {
 });
 
 app.post("/api/shorturl", function (req, res, done) {
-  dns.lookup(req.body.url.split('/')[2], (err, address) =>
-    res.json({ error: "invalid url", ip: address })
+  dns.lookup(req.body.url, function (err, address) {
+    if (! typeof address === 'string')
+    res.json({ error: "invalid url"});
+  }
   );
 //   var randNumber = Math.floor(Math.random() * max);
 //   const url = new Url({
