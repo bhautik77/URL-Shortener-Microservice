@@ -38,29 +38,27 @@ app.post("/api/shorturl", function (req, res, done) {
     res.json({ error: "invalid url" });
   }
   dns.lookup(host.hostname, function (err, address, family) {
-    if (err) 
-      res.json({ error: "invalid url"});
+    if (err) res.json({ error: "invalid url" });
     else {
-        var randNumber = Math.floor(Math.random() * max);
-  const url = new Url({
-    url: req.body.url.toString(),
-    short_url: randNumber,
+      var randNumber = Math.floor(Math.random() * max);
+      const url = new Url({
+        url: req.body.url.toString(),
+        short_url: randNumber,
+      });
+      url.save(function (err, data) {
+        if (err) return console.error(err);
+        return done(null, data);
+      });
+      res.json({ original_url: req.body.url, short_url: randNumber });
+    }
   });
-  url.save(function (err, data) {
-    if (err) return console.error(err);
-    return done(null, data);
-  });
-  res.json({ original_url: req.body.url, short_url: randNumber });
-}));
+});
 
 app.get("/api/shorturl/:short_url", function (req, res, done) {
   Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
     if (err) return console.error(err);
     res.redirect(String(doc.url));
   });
-    }
-  });
-
 });
 
 // Your first API endpoint
