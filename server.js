@@ -44,9 +44,10 @@ app.post("/api/shorturl", function querypara2(req, res, done) {
 });
 
 app.get("/api/shorturl/:short_url", function (req, res, done) {
-  Url.findOne({ short_url: req.params.short_url }, function (err, data) {
+  Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
     if (err) return console.error(err);
-    res.redirect(Url.url);
+    // res.json({12: "hello",hello: doc.url});
+    res.redirect(String(doc.url));
   });
   
 });
