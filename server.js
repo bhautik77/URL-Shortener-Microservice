@@ -32,32 +32,32 @@ app.get("/", function (req, res) {
 });
 
 app.post("/api/shorturl", function (req, res, done) {
-  var host=new URL(req.body.url);
-  if (host == null)
-    res.json({ error: "invalid url"});
-  dns.lookup(host.hostname, function (err, address) {
-    if (! typeof address === 'string')
-    res.json({ error: "invalid url"});
-        res.json({ error: "valid url"});
+  try {
+    var host = new URL(req.body.url);
+  } catch (err) {
+    res.json({ error: "invalid url" });
   }
-  );
-//   var randNumber = Math.floor(Math.random() * max);
-//   const url = new Url({
-//     url: req.body.url.toString(),
-//     short_url: randNumber,
-//   });
-//   url.save(function (err, data) {
-//     if (err) return console.error(err);
-//     return done(null, data);
-//   });
-//   res.json({ original_url: req.body.url, short_url: randNumber });
-// });
+  dns.lookup(host.hostname, function (err, address) {
+    if (address === undefined) 
+      res.json({ error: "invalid url"});
+  });
+  var randNumber = Math.floor(Math.random() * max);
+  const url = new Url({
+    url: req.body.url.toString(),
+    short_url: randNumber,
+  });
+  url.save(function (err, data) {
+    if (err) return console.error(err);
+    return done(null, data);
+  });
+  res.json({ original_url: req.body.url, short_url: randNumber });
+});
 
-// app.get("/api/shorturl/:short_url", function (req, res, done) {
-//   Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
-//     if (err) return console.error(err);
-//     res.redirect(String(doc.url));
-//   });
+app.get("/api/shorturl/:short_url", function (req, res, done) {
+  Url.findOne({ short_url: req.params.short_url }, function (err, doc) {
+    if (err) return console.error(err);
+    res.redirect(String(doc.url));
+  });
 });
 
 // Your first API endpoint
