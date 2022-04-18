@@ -32,9 +32,13 @@ app.get("/", function (req, res) {
 });
 
 app.post("/api/shorturl", function (req, res, done) {
-  dns.lookup(req.body.url, function (err, address) {
+  var host=new URL(req.body.url);
+  if (host == null)
+    res.json({ error: "invalid url"});
+  dns.lookup(host.hostname, function (err, address) {
     if (! typeof address === 'string')
     res.json({ error: "invalid url"});
+        res.json({ error: "valid url"});
   }
   );
 //   var randNumber = Math.floor(Math.random() * max);
